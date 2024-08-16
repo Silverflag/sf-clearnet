@@ -1,0 +1,15 @@
+@import './generic.css';
+
+::-webkit-scrollbar {
+  width: 10px;
+  background: var(--bg, black);
+}
+
+::-webkit-track {
+  background: var(--bg, black);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent, green);
+  border-radius: 10000000vw;
+}

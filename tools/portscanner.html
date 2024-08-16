@@ -1,0 +1,220 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Port Scanner</title>
+</head>
+<style>
+    body {
+  background-color: #000;
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+}
+
+input[type='text'] {
+  width: 100%;
+  max-width: 40rem;
+  padding: 0.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  border-radius: 0.25rem;
+  border: 3px solid #9f9;
+  color: #fff;
+  background-color: #000;
+  margin-bottom: 0.5rem;
+  transition: border-color 0.25s ease-in-out;
+}
+
+input[type='text']::placeholder {
+  color: #fff;
+  font-weight: 800;
+  opacity: 0.8;
+}
+
+input[type='text']:focus {
+  outline: none;
+  border-color: rgb(255, 255, 255);
+}
+
+input[type='button'] {
+  background-color: #9f9;
+  color: #000;
+  padding: 0.5rem 1.5rem;
+  border: none;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  color: rgb(0, 0, 0);
+  font-weight: 800;
+  border-radius: 0.25rem;
+  transition: background-color 250ms ease-in-out, transform 250ms ease-in-out;
+}
+
+input[type='button']:hover {
+  background-color: #3f3;
+  transform: scale(1.05);
+}
+
+input[type='button']:active {
+  background-color: #2c2;
+  transform: scale(0.95);
+}
+
+#container {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+  gap: 0.5rem;
+}
+
+#info {
+  margin-top: 20px;
+}
+
+#map {
+  width: 100%;
+  height: 300px;
+  margin-bottom: 20px;
+}
+
+.card {
+  background-color: #333;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+}
+
+.card-content {
+  color: #fff;
+  font-size: 18px;
+}
+
+.service-info {
+  color: #aaa;
+}
+</style>
+<body>
+  <div id="container">
+    <input type="text" id="ipAddress" placeholder="Enter IP address (e.g., localhost)">
+    <div class="button-container">
+      <input type="text" id="ports" placeholder="Enter ports (separated by comma)">
+    </div>
+    <div class="button-container">
+      <input type="text" id="startPort" placeholder="Start Port">
+      <input type="text" id="endPort" placeholder="End Port">
+    </div>
+    <div class="button-container">
+      <input type="button" value="Scan Individual Ports" onclick="scanIndividualPorts()">
+      <input type="button" value="Scan Port Range" onclick="scanPortRange()">
+      <input type="button" value="Scan My IP" onclick="scanMyIP()">
+    </div>
+    <div id="info"></div>
+  </div>
+
+  <script>
+    async function scanIndividualPorts() {
+      const host = document.getElementById("ipAddress").value.trim();
+      const portsStr = document.getElementById("ports").value.trim();
+
+      if (!host || !portsStr) {
+        alert("Please enter a valid host and ports");
+        return;
+      }
+
+      const ports = portsStr.split(',').map(port => parseInt(port.trim()));
+      const failedPorts = [];
+
+      document.getElementById("info").innerHTML = "<h2>Scanning individual ports...</h2>";
+
+      for (let port of ports) {
+        try {
+          const response = await fetch(`http://${host}:${port}`, { mode: 'no-cors' });
+          const status = response.status;
+          const service = getService(port);
+          const result = `Port ${port} is ${status === 200 ? 'open' : 'closed'} (${status})${service ? ` - Service: ${service}` : ''}`;
+          document.getElementById("info").innerHTML += `<p>${result}</p>`;
+        } catch (error) {
+          failedPorts.push(port);
+        }
+      }
+
+      if (failedPorts.length > 0) {
+        document.getElementById("info").innerHTML += `<p>${failedPorts.length} port${failedPorts.length > 1 ? 's' : ''} failed to respond.</p>`;
+      }
+    }
+
+    async function scanPortRange() {
+      const host = document.getElementById("ipAddress").value.trim();
+      const startPort = parseInt(document.getElementById("startPort").value.trim());
+      const endPort = parseInt(document.getElementById("endPort").value.trim());
+
+      if (!host || isNaN(startPort) || isNaN(endPort)) {
+        alert("Please enter a valid host and port range");
+        return;
+      }
+
+      const failedPorts = [];
+
+      document.getElementById("info").innerHTML = "<h2>Scanning port range...</h2>";
+
+      for (let port = startPort; port <= endPort; port++) {
+        try {
+          const response = await fetch(`http://${host}:${port}`, { mode: 'no-cors' });
+          const status = response.status;
+          const service = getService(port);
+          const result = `Port ${port} is ${status === 200 ? 'open' : 'closed'} (${status})${service ? ` - Service: ${service}` : ''}`;
+          document.getElementById("info").innerHTML += `<p>${result}</p>`;
+        } catch (error) {
+          failedPorts.push(port);
+        }
+      }
+
+      if (failedPorts.length > 0) {
+        document.getElementById("info").innerHTML += `<p>${failedPorts.length} port${failedPorts.length > 1 ? 's' : ''} failed to respond.</p>`;
+      }
+    }
+
+    function getService(port) {
+      switch (port) {
+        case 80:
+          return "HTTP";
+        case 443:
+          return "HTTPS";
+        case 22:
+          return "SSH";
+        case 21:
+          return "FTP";
+        default:
+          return null;
+      }
+    }
+
+    function scanMyIP() {
+      document.getElementById("info").innerText = "Scanning ports for your IP...";
+
+      fetch('https://api64.ipify.org?format=json')
+      .then(response => response.json())
+      .then(data => {
+        const myIP = data.ip;
+        document.getElementById("ipAddress").value = myIP;
+        scanPortRange();
+      })
+      .catch(error => {
+        console.error('Error fetching IP:', error);
+        document.getElementById("info").innerText = "Failed to retrieve your IP address";
+      });
+    }
+  </script>
+</body>
+</html>

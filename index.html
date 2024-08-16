@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6356609490687979"
+     crossorigin="anonymous"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Silver Flag | Home</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-theme="normal" data-scroll="false">
+    <nav class="nav-closed">
+      <span id="logo">Silver Flag</span>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="#about">About Us</a></li>
+        <li><a href="/tools/index.html">Tools</a></li>
+        <li><a href="/chat/index.php">Chat</a></li>
+      </ul>
+      <button>Get Started</button>
+      <button id="x-out-menu">X</button>
+    </nav>
+    <header>
+      <div class="column text">
+        <h1 class="title">STOP THE SURVEILLANCE</h1>
+        <p>
+          Join the team to stop
+          goverment and company
+          surveillance on your 
+          devices.
+        </p>
+        <div class="buttons">
+          <button id="chat">Chat</button>
+          <button id="strt-nw">Blog</button>
+        </div>
+      </div>
+      <div class="column">
+        <img
+          src="./assets/landing-img.svg"
+          alt="woman standing with shield next to server"
+        />
+      </div>
+    </header>
+    <main>
+      <section id="about">
+        <h2>Who are we?</h2>
+        <p style="max-width: 100%">
+			Our organization is dedicated to defending digital rights, advocating for online privacy, and promoting freedom of expression. We strive to protect internet users from censorship and surveillance while advocating for policies that maintain an open and accessible internet for all. We also work to try and encourage the progress of open source software.
+        </p>
+      </section>
+      <section id="team">
+        <h2>Our Team</h2>
+        <div class="team-card dead-pirate-bobbers">
+          <span class="team-member">
+            <span
+              class="name"
+              onclick="window.open('http://discordapp.com/users/794589315866296361', '_blank')"
+              >Dread Pirate Roberts</span
+            >
+            <img
+              src="./assets/user-icons/dead-pirate-bobers.webp"
+              style="max-width: 2.5rem"
+            />
+            <span class="role">Cybersecurity Engineer</span>
+          </span>
+          <p class="about-team-member">
+			I work on many open source projects, and like to hang out in chat rooms and discuss topics I am interested in, like cybersecurity and some programming. For silverflag, I am the main sysadmin and run all of our services.
+          </p>
+        </div>
+
+        <div class="team-card">
+          <span class="team-member">
+            <span
+              class="name"
+              onclick="window.open('https:/discordapp.com/users/1226198104525770875', '_blank')"
+              >/dev/null/</span
+            >
+            <img
+              src="https://cdn.discordapp.com/avatars/1226198104525770875/e802f7b080694201deb7e6b63008c174?size=1024"
+              style="max-width: 2.5rem"
+            />
+            <span class="role">Contributor</span>
+          </span>
+          <p class="about-team-member">
+			I am part of silverflag, but I do not have any specific role yet. Personally, I like working on programming projects and talking in chat rooms about a range of topics. I contribute some hardware to the silverflag project.
+          </p>
+        </div>
+      </section>
+    </main>
+    </span>
+  </body>
+  <script src="assets/js/main.js"></script>
+  <script>
+    document.getElementById('x-out-menu').addEventListener('click', () => {
+      document.querySelector('nav').classList.toggle('nav-closed');
+    });
+  </script>
+</html>
+
+
+
+<div id="custom-cursor"></div>
+
+<style>
+  /* Custom Cursor Styles */
+  body {
+    cursor: none;
+  }
+  
+  #custom-cursor {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: difference;
+    transition: transform 0.1s ease;
+  }
+  
+  @keyframes wobble {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2) rotate(5deg); }
+  }
+</style>
+
+<script>
+  // Custom Cursor JavaScript
+  function updateCursor(e) {
+    const cursor = document.getElementById('custom-cursor');
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+    
+    // Get the color of the element under the cursor
+    const element = document.elementFromPoint(e.clientX, e.clientY);
+    const color = window.getComputedStyle(element).getPropertyValue('background-color');
+    
+    // Invert the color
+    const rgb = color.match(/\d+/g);
+    const invertedColor = rgb ? `rgb(${255-rgb[0]}, ${255-rgb[1]}, ${255-rgb[2]})` : '#ff00ff';
+    
+    cursor.style.background = invertedColor;
+    cursor.style.boxShadow = `0 0 10px ${invertedColor}`;
+    
+    // Add wobble effect
+    cursor.style.animation = 'wobble 0.5s infinite';
+  }
+
+  document.addEventListener('mousemove', updateCursor);
+</script>
+

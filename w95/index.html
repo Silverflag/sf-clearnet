@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>w95sf</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'MS Sans Serif', Arial, sans-serif;
+            overflow: hidden;
+        }
+        #desktop {
+            position: relative;
+            width: 100%;
+            height: calc(100% - 28px);
+            background-color: #008080;
+            overflow: hidden;
+        }
+        .icon {
+            position: absolute;
+            width: 64px;
+            height: 80px;
+            text-align: center;
+            color: white;
+            cursor: pointer;
+            user-select: none;
+        }
+        .icon img {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 5px;
+        }
+        .icon-label {
+            font-size: 12px;
+            word-wrap: break-word;
+            text-shadow: 1px 1px 1px black;
+        }
+        .taskbar {
+            height: 28px;
+            background-color: #c0c0c0;
+            border-top: 1px solid #ffffff;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            padding: 0 2px;
+        }
+        #startButton {
+            display: flex;
+            align-items: center;
+            height: 22px;
+            padding: 0 5px;
+            margin-right: 10px;
+            background-color: #c0c0c0;
+            border-top: 1px solid #ffffff;
+            border-left: 1px solid #ffffff;
+            border-right: 1px solid #808080;
+            border-bottom: 1px solid #808080;
+            font-weight: bold;
+            font-size: 11px;
+        }
+        #clock {
+            margin-left: auto;
+            font-size: 11px;
+            border-top: 1px solid #808080;
+            border-left: 1px solid #808080;
+            border-right: 1px solid #ffffff;
+            border-bottom: 1px solid #ffffff;
+            padding: 1px 5px;
+        }
+        #startMenu {
+            display: none;
+            position: fixed;
+            bottom: 28px;
+            left: 0;
+            background-color: #c0c0c0;
+            border: 1px solid #000;
+            border-bottom: none;
+        }
+        .startMenuItem {
+            padding: 3px 20px 3px 5px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .startMenuItem:hover {
+            background-color: #000080;
+            color: white;
+        }
+        #sleepOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 1000;
+        }
+        #contextMenu {
+            display: none;
+            position: absolute;
+            background-color: #c0c0c0;
+            border: 1px solid #000;
+            z-index: 100;
+            font-size: 11px;
+        }
+        .contextMenuItem {
+            padding: 3px 20px 3px 5px;
+            cursor: pointer;
+        }
+        .contextMenuItem:hover {
+            background-color: #000080;
+            color: white;
+        }
+        .selected {
+            background-color: rgba(0, 0, 128, 0.5);
+            outline: 1px dotted #ffffff;
+        }
+        #selectionBox {
+            position: absolute;
+            border: 1px dotted #ffffff;
+            background-color: rgba(0, 0, 128, 0.3);
+            display: none;
+        }
+        .window {
+            position: absolute;
+            background-color: #c0c0c0;
+            border: 1px solid #000000;
+            box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #dfdfdf, inset -2px -2px grey, inset 2px 2px #fff;
+            min-width: 200px;
+            min-height: 150px;
+        }
+        .window-header {
+            background-color: #000080;
+            color: white;
+            font-weight: bold;
+            padding: 3px 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .window-title {
+            font-size: 12px;
+        }
+        .window-close {
+            background-color: #c0c0c0;
+            border: 1px solid #ffffff;
+            border-right-color: #000000;
+            border-bottom-color: #000000;
+            padding: 0 5px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .window-content {
+            padding: 10px;
+            height: calc(100% - 40px);
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        #notepadContent {
+            width: calc(100% - 4px);
+            height: calc(100% - 50px);
+            resize: none;
+            border: 1px inset #ffffff;
+            background-color: white;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-y: scroll;
+        }
+
+        .menuBar {
+            background-color: #c0c0c0;
+            border-bottom: 1px solid #808080;
+            display: flex;
+        }
+
+        .menuItem {
+            position: relative;
+            padding: 2px 5px;
+            cursor: pointer;
+        }
+
+        .menuItem:hover {
+            background-color: #000080;
+            color: white;
+        }
+
+        .dropdownMenu {
+            display: none;
+            position: absolute;
+            background-color: #c0c0c0;
+            border: 1px outset #ffffff;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+
+        .menuItem:hover .dropdownMenu {
+            display: block;
+        }
+
+        .menuOption {
+            padding: 2px 10px;
+        }
+
+        .menuOption:hover {
+            background-color: #000080;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="desktop"></div>
+    <div id="selectionBox"></div>
+    <div class="taskbar">
+        <div id="startButton">Start</div>
+        <div id="clock"></div>
+    </div>
+    <div id="startMenu">
+        <div class="startMenuItem" onclick="sleep()">Sleep</div>
+        <div class="startMenuItem" onclick="shutdown()">Shut Down</div>
+        <div class="startMenuItem" onclick="restart()">Restart</div>
+    </div>
+    <div id="sleepOverlay"></div>
+    <div id="contextMenu">
+        <div class="contextMenuItem" onclick="createNewFolder()">New Folder</div>
+        <div class="contextMenuItem" onclick="createNewFile()">New File</div>
+    </div>
+
+    <script>
+        // Define your apps and folders here
+        const desktopItems = [
+            {
+                name: "My Computer",
+                icon: "https://silverflag.net/w95/mycomputer.png",
+                x: 20,
+                y: 20,
+                type: "folder",
+                contents: []
+            },
+            {
+                name: "IP2LOCATION",
+                url: "https://silverflag.net/tools/iputility.html",
+                x: 20,
+                y: 120,
+                type: "app"
+            },  
+            {
+                name: "DNS Resolver",
+                url: "https://silverflag.net/tools/dns.html",
+                x: 20,
+                y: 220,
+                type: "app"
+            },
+            {
+                name: "Base64 Encoder/Decoder",
+                url: "https://silverflag.net/tools/based.html",
+                x: 20,
+                y: 320,
+                type: "app"
+            },
+            {
+                name: "Password Strength",
+                url: "https://silverflag.net/tools/passwordutil.html",
+                x: 20,
+                y: 420, // he he 420
+                type: "app"
+            },
+            {
+                name: "Port Scanner",
+                url: "https://silverflag.net/tools/portscanner.html",
+                x: 20,
+                y: 520,
+                type: "app"
+            },
+            {
+                name: "Chat",
+                url: "https://silverflag.net/chat/index.php",
+                x: 20,
+                y: 620,
+                type: "app"
+            }
+        ];
+
+        const notepadItem = {
+            name: "Notepad",
+            icon: "https://silverflag.net/w95/notepad.png",
+            x: 120,
+            y: 20,
+            type: "app",
+            content: "404 about us not found - too lazy"
+        };
+
+        desktopItems.push(notepadItem);
+
+
+        const desktop = document.getElementById('desktop');
+        const startButton = document.getElementById('startButton');
+        const startMenu = document.getElementById('startMenu');
+        const clock = document.getElementById('clock');
+        const sleepOverlay = document.getElementById('sleepOverlay');
+        const contextMenu = document.getElementById('contextMenu');
+        const selectionBox = document.getElementById('selectionBox');
+
+        function createIcon(item) {
+            const icon = document.createElement('div');
+            icon.className = 'icon';
+            icon.style.left = item.x + 'px';
+            icon.style.top = item.y + 'px';
+            
+            let iconUrl = item.icon || (item.url ? `${new URL(item.url).origin}/favicon.ico` : 'https://silverflag.net/w95/briefcase.png');
+            
+            icon.innerHTML = `
+                <img src="${iconUrl}" alt="${item.name}" onerror="this.src='https://silverflag.net/w95/briefcase.png'">
+                <div class="icon-label">${item.name}</div>
+            `;
+            
+            icon.addEventListener('mousedown', startDrag);
+            icon.addEventListener('click', (e) => {
+                selectIcon(e);
+                openApp(item);
+            });
+            desktop.appendChild(icon);
+        }
+
+        let isDragging = false;
+        let dragTarget = null;
+        let startX, startY, startLeft, startTop;
+
+        function startDrag(e) {
+            if (e.button !== 0) return; // Only left mouse button
+            isDragging = true;
+            dragTarget = e.currentTarget;
+            startX = e.clientX;
+            startY = e.clientY;
+            startLeft = parseInt(dragTarget.style.left) || 0;
+            startTop = parseInt(dragTarget.style.top) || 0;
+
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
+            e.preventDefault();
+        }
+
+        function drag(e) {
+            if (isDragging) {
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                dragTarget.style.left = startLeft + dx + 'px';
+                dragTarget.style.top = startTop + dy + 'px';
+            }
+        }
+
+        function stopDrag() {
+            isDragging = false;
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+
+        function selectIcon(e) {
+            if (!e.ctrlKey) {
+                const icons = document.querySelectorAll('.icon');
+                icons.forEach(icon => icon.classList.remove('selected'));
+            }
+            e.currentTarget.classList.toggle('selected');
+        }
+
+        startButton.addEventListener('click', () => {
+            startMenu.style.display = startMenu.style.display === 'none' ? 'block' : 'none';
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target !== startButton && !startMenu.contains(e.target)) {
+                startMenu.style.display = 'none';
+            }
+        });
+
+        function updateClock() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            clock.textContent = `${hours}:${minutes}`;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        function sleep() {
+            sleepOverlay.style.display = 'block';
+        }
+
+        function shutdown() {
+            // close page
+            window.close();
+        }
+
+        function restart() {
+            //reload
+            location.reload();
+        }
+
+        desktop.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = e.clientX + 'px';
+            contextMenu.style.top = e.clientY + 'px';
+        });
+
+        document.addEventListener('click', () => {
+            contextMenu.style.display = 'none';
+        });
+
+        function createNewFolder() {
+            const folderName = prompt('Enter folder name:');
+            if (folderName) {
+                const newFolder = {
+                    name: folderName,
+                    icon: 'https://silverflag.net/w95/folder.png',
+                    x: 100,
+                    y: 100,
+                    type: 'folder',
+                    contents: []
+                };
+                createIcon(newFolder);
+            }
+        }
+
+
+
+        function createNewFile() {
+            const fileName = prompt('Enter file name:');
+            if (fileName) {
+                const newFile = {
+                    name: fileName,
+                    icon: 'https://silverflag.net/w95/briefcase.png',
+                    x: 100,
+                    y: 100,
+                    type: 'app',
+                    url: '#'
+                };
+                createIcon(newFile);
+            }
+        }
+
+        function openApp(app) {
+            if (app.name === "Notepad") {
+                openNotepad(app);
+            } else if (app.url === undefined) {
+                alert('Cannot open undefined - open app function');
+                return;
+            } else {
+                const window = document.createElement('div');
+                window.className = 'window';
+                window.style.left = '100px';
+                window.style.top = '100px';
+                window.style.width = '600px';
+                window.style.height = '400px';
+
+                window.innerHTML = `
+                <div class="window-header">
+                    <div class="window-title">${app.name}</div>
+                    <div class="window-close" onclick="this.closest('.window').remove()">X</div>
+                </div>
+                <div class="window-content">
+                    <iframe src="${app.url}"></iframe>
+                </div>
+                `;
+
+                desktop.appendChild(window);
+                makeDraggable(window);
+            }
+        }
+
+
+        function openWindow(item) {
+            if (item.type === "app") {
+                if (item.name === "Notepad") {
+                    openNotepad(item);
+                } else {
+                    openApp(item); 
+                }
+            } else if (item.type === "folder") {
+                openFolder(item);
+            } else {
+                alert('Cannot open undefined - open window function');
+            }
+        }
+
+
+
+
+        function openFolder(folder) {
+    const window = document.createElement('div');
+    window.className = 'window';
+    window.style.left = '100px';
+    window.style.top = '100px';
+    window.style.width = '400px';
+    window.style.height = '300px';
+
+        let folderContent = folder.contents.map(item => {
+            // Check if item.url is a valid URL
+            let iconSrc;
+            try {
+                iconSrc = item.url ? new URL(item.url).origin + '/favicon.ico' : 'https://silverflag.net/w95/briefcase.png';
+            } catch (e) {
+                // Fallback if item.url is invalid
+                iconSrc = 'https://silverflag.net/w95/briefcase.png';
+            }
+
+
+            return `
+                <div class="icon" style="position: relative; display: inline-block; margin: 10px;" onclick="openApp(this)" data-name="${encodeURIComponent(item.name)}" data-url="${encodeURIComponent(item.url)}">
+                    <img src="${item.icon || iconSrc}" alt="${item.name}" onerror="this.src='https://silverflag.net/w95/briefcase.png'">
+                    <div class="icon-label">${item.name}</div>
+                </div>
+            `;
+        }).join('');
+
+        window.innerHTML = `
+            <div class="window-header">
+                <div class="window-title">${folder.name}</div>
+                <div class="window-close" onclick="this.closest('.window').remove()">X</div>
+            </div>
+            <div class="window-content">
+                ${folderContent}
+            </div>
+        `;
+
+        desktop.appendChild(window);
+        makeDraggable(window);
+    }
+
+        function makeDraggable(element) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            element.querySelector('.window-header').onmousedown = dragMouseDown;
+
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                element.style.top = (element.offsetTop - pos2) + "px";
+                element.style.left = (element.offsetLeft - pos1) + "px";
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+
+
+        // Desktop selection effect
+        let isSelecting = false;
+        let selectionStartX, selectionStartY;
+
+        desktop.addEventListener('mousedown', (e) => {
+            if (e.target === desktop) {
+                isSelecting = true;
+                selectionStartX = e.clientX;
+                selectionStartY = e.clientY;
+                selectionBox.style.left = selectionStartX + 'px';
+                selectionBox.style.top = selectionStartY + 'px';
+                selectionBox.style.width = '0px';
+                selectionBox.style.height = '0px';
+                selectionBox.style.display = 'block';
+
+                document.addEventListener('mousemove', updateSelectionBox);
+                document.addEventListener('mouseup', endSelection);
+            }
+        });
+
+        function updateSelectionBox(e) {
+            if (isSelecting) {
+                const width = e.clientX - selectionStartX;
+                const height = e.clientY - selectionStartY;
+
+                selectionBox.style.width = Math.abs(width) + 'px';
+                selectionBox.style.height = Math.abs(height) + 'px';
+                selectionBox.style.left = (width < 0 ? e.clientX : selectionStartX) + 'px';
+                selectionBox.style.top = (height < 0 ? e.clientY : selectionStartY) + 'px';
+
+                // Select icons within the selection box
+                const icons = document.querySelectorAll('.icon');
+                const selectionRect = selectionBox.getBoundingClientRect();
+
+                icons.forEach(icon => {
+                    const iconRect = icon.getBoundingClientRect();
+                    if (
+                        iconRect.left < selectionRect.right &&
+                        iconRect.right > selectionRect.left &&
+                        iconRect.top < selectionRect.bottom &&
+                        iconRect.bottom > selectionRect.top
+                    ) {
+                        icon.classList.add('selected');
+                    } else {
+                        icon.classList.remove('selected');
+                    }
+                });
+            }
+        }
+
+        function endSelection() {
+            isSelecting = false;
+            selectionBox.style.display = 'none';
+            document.removeEventListener('mousemove', updateSelectionBox);
+            document.removeEventListener('mouseup', endSelection);
+        }
+        function openNotepad(item) {
+            const window = document.createElement('div');
+            window.className = 'window';
+            window.style.left = '100px';
+            window.style.top = '100px';
+            window.style.width = '600px';
+            window.style.height = '400px';
+
+            window.innerHTML = `
+            <div class="window-header">
+                <div class="window-title">${item.name}</div>
+                <div class="window-close" onclick="this.closest('.window').remove()">X</div>
+            </div>
+            <div class="menuBar">
+                <div class="menuItem">
+                File
+                <div class="dropdownMenu">
+                    <div class="menuOption" onclick="newFile()">New</div>
+                    <div class="menuOption" onclick="saveFile()">Save</div>
+                    <div class="menuOption" onclick="closeWindow('notepadApp')">Exit</div>
+                </div>
+                </div>
+                <div class="menuItem">
+                Edit
+                <div class="dropdownMenu">
+                    <div class="menuOption" onclick="document.execCommand('cut')">Cut</div>
+                    <div class="menuOption" onclick="document.execCommand('copy')">Copy</div>
+                    <div class="menuOption" onclick="document.execCommand('paste')">Paste</div>
+                </div>
+                </div>
+            </div>
+            <textarea id="notepadContent" rows="20" cols="80">${item.content}</textarea>
+            `;
+
+            desktop.appendChild(window);
+            makeDraggable(window);
+        }
+
+        
+
+
+function newFile() {
+    document.getElementById('notepadContent').value = '';
+}
+
+function saveFile() {
+    const content = document.getElementById('notepadContent').value;
+    const notepadItem = desktopItems.find(item => item.name === "Notepad");
+    if (notepadItem) {
+        notepadItem.content = content;
+    }
+}
+
+
+
+
+
+        // Initialize desktop
+        desktopItems.forEach(createIcon);
+    </script>
+</body>
+</html>

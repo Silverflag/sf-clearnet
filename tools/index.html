@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <nav class="nav-closed">
+      <span id="logo">Silver Flag</span>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="#about">About Us</a></li>
+        <li><a href="/tools/index.html">Tools</a></li>
+        <li><a href="/chat/index.php">Chat</a></li>
+      </ul>
+      <button>Get Started</button>
+      <button id="x-out-menu">X</button>
+    </nav>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silverflag | Tools</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 800;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            border: 2px solid #9f9; /* Added border */
+            border-radius: 5px;
+            padding: 20px;
+            margin: 10px;
+            width: calc(33.33% - 20px); /* 3 cards across with some margin */
+            display: inline-block;
+            background-color: #000;
+            color: #fff;
+            box-sizing: border-box; /* Added box-sizing */
+            /* Adjusted height */
+            height: auto; /* Initially set to auto */
+            min-height: 250px; /* Minimum height to ensure cards are not too small */
+            overflow: hidden; /* Hide overflow content */
+            position: relative; /* Added */
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-weight: 800;
+            /* Added */
+            height: 60px; /* Set a fixed height for the title */
+            overflow: hidden; /* Hide overflow content */
+        }
+
+        .card p {
+            margin-bottom: 0;
+        }
+
+        .card-button {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%); /* Center the button horizontally */
+            background-color: #9f9;
+            color: #000;
+            padding: 5px 15px;
+            border: none;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 800;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s; /* Added transition */
+        }
+
+        .card-button:hover {
+            background-color: #3f3;
+            color: #000;
+        }
+
+        a {
+            text-decoration: none;
+            color: #9f9;
+            font-weight: 800;
+        }
+
+        a:hover {
+            color: #3f3;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Silverflag | Tools</h1>
+
+    <div id="container">
+        <!-- Cards will be added here -->
+        <div id="toolCards">
+            <!-- Cards will be dynamically generated here -->
+        </div>
+    </div>
+
+    <script>
+        // Function to display tools on the page
+        function displayTools() {
+            let toolCards = document.getElementById('toolCards');
+            toolCards.innerHTML = ''; // Clear existing cards
+
+            // Fetch existing tools from server
+            fetch('server.php')
+                .then(response => response.json())
+                .then(tools => {
+                    // Find the height of the tallest card
+                    let maxHeight = 0;
+                    tools.forEach(tool => {
+                        // Create a temporary div to measure the height
+                        let tempDiv = document.createElement('div');
+                        tempDiv.classList.add('card');
+                        tempDiv.innerHTML = `
+                            <h2>${tool.name}</h2>
+                            <p>${tool.description}</p>
+                            <a href="${tool.link}" target="_blank">Go to Tool</a>
+                        `;
+                        document.body.appendChild(tempDiv); // Append to body temporarily
+                        let tempHeight = tempDiv.offsetHeight;
+                        if (tempHeight > maxHeight) {
+                            maxHeight = tempHeight;
+                        }
+                        document.body.removeChild(tempDiv); // Remove from body
+                    });
+
+                    tools.forEach(tool => {
+                        // Creating card elements
+                        let card = document.createElement('div');
+                        card.classList.add('card');
+
+                        let name = document.createElement('h2');
+                        name.textContent = tool.name;
+
+                        let description = document.createElement('p');
+                        description.textContent = tool.description;
+
+                        let button = document.createElement('button');
+                        button.classList.add('card-button');
+                        button.textContent = 'Go to Tool';
+                        button.onclick = function() {
+                            window.open(tool.link, '_blank');
+                        };
+
+                        // Appending elements to the card
+                        card.appendChild(name);
+                        card.appendChild(description);
+                        card.appendChild(button);
+
+                        // Set the height of the card to match the tallest card
+                        card.style.height = `${maxHeight}px`;
+
+                        // Appending card to the page
+                        toolCards.appendChild(card);
+                    });
+                });
+        }
+
+        // Initial display of tools
+        displayTools();
+    </script>
+</body>
+
+</html>

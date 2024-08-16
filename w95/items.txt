@@ -1,0 +1,5 @@
+Tools/ip2location.bat>https://silverflag.net/tools/iputility.html
+Tools/dns-resolver.ps1>https://silverflag.net/tools/dns.html
+Tools/b64.cpp>https://silverflag.net/tools/based.html
+Tools/password-strength.py>https://silverflag.net/tools/passwordutil.html
+Tools/portscanner.exe>https://silverflag.net/tools/portscanner.html

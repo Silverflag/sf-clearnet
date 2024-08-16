@@ -1,0 +1,5 @@
+Failed to fetch tools: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'dbs12871761.tools' doesn't exist
+Failed to add tool: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'dbs12871761.tools' doesn't exist
+Created table "tools" successfully
+Created table "users" successfully
+Created admin user successfully

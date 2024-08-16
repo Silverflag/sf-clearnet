@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Base Converter</title>
+<style>
+    body {
+        background-color: #000;
+        color: #fff;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 800;
+    }
+
+    input[type='text'] {
+        width: 100%;
+        max-width: 40rem;
+        padding: 0.5rem;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 800;
+        border-radius: 0.25rem;
+        border: 3px solid #9f9;
+        color: #fff;
+        background-color: #000;
+        margin-bottom: 0.5rem;
+        transition: border-color 0.25s ease-in-out;
+    }
+
+    input[type='text']::placeholder {
+        color: #fff;
+        font-weight: 800;
+        opacity: 0.8;
+    }
+
+    input[type='text']:focus {
+        outline: none;
+        border-color: rgb(255, 255, 255);
+    }
+
+    input[type='button'] {
+        background-color: #9f9;
+        color: #000;
+        padding: 0.5rem 1.5rem;
+        border: none;
+        cursor: pointer;
+        font-family: 'JetBrains Mono', monospace;
+        color: rgb(0, 0, 0);
+        font-weight: 800;
+        border-radius: 0.25rem;
+        transition: background-color 250ms ease-in-out, transform 250ms ease-in-out;
+    }
+
+    input[type='button']:hover {
+        background-color: #3f3;
+        transform: scale(1.05);
+    }
+
+    input[type='button']:active {
+        background-color: #2c2;
+        transform: scale(0.95);
+    }
+
+    #container {
+        max-width: 40rem;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 20px;
+        gap: 0.5rem;
+    }
+
+    #info {
+        margin-top: 20px;
+    }
+
+    #map {
+        width: 100%;
+        height: 300px;
+        margin-bottom: 20px;
+    }
+
+    .card {
+        background-color: #333;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+    }
+
+    .card-content {
+        color: #fff;
+        font-size: 18px;
+    }
+
+    .service-info {
+        color: #aaa;
+    }
+</style>
+</head>
+<body>
+<div id="container">
+    <h1>Base Converter</h1>
+
+    <div class="button-container">
+        <input type="text" id="input" placeholder="Enter text or base-encoded data...">
+        <select id="baseFrom">
+            <option value="binary">Binary</option>
+            <option value="octal">Octal</option>
+            <option value="decimal">Decimal</option>
+            <option value="hexadecimal">Hexadecimal</option>
+            <option value="base32">Base32</option>
+            <option value="base64">Base64</option>
+            <option value="plaintext">Plaintext</option>
+        </select>
+    </div>
+
+    <div class="button-container">
+        <input type="text" id="output" readonly>
+        <select id="baseTo">
+            <option value="binary">Binary</option>
+            <option value="octal">Octal</option>
+            <option value="decimal">Decimal</option>
+            <option value="hexadecimal">Hexadecimal</option>
+            <option value="base32">Base32</option>
+            <option value="base64">Base64</option>
+            <option value="plaintext">Plaintext</option>
+        </select>
+    </div>
+
+    <div class="button-container">
+        <input type="button" value="Convert" onclick="convert()">
+        <input type="button" value="Swap" onclick="swap()">
+    </div>
+
+    <div id="info" class="service-info">
+        <p>Supported formats: binary, octal, decimal, hexadecimal, base32, base64</p>
+    </div>
+</div>
+
+<script>
+function convert() {
+    const inputText = document.getElementById("input").value.trim();
+    const baseFrom = document.getElementById("baseFrom").value;
+    const baseTo = document.getElementById("baseTo").value;
+
+    let outputText;
+
+    try {
+        if (baseFrom === "plaintext" && baseTo !== "plaintext") {
+            switch (baseTo) {
+                case "binary":
+                    outputText = textToBinary(inputText);
+                    break;
+                case "octal":
+                    outputText = textToOctal(inputText);
+                    break;
+                case "decimal":
+                    outputText = textToDecimal(inputText);
+                    break;
+                case "hexadecimal":
+                    outputText = textToHex(inputText);
+                    break;
+                case "base32":
+                    outputText = textToBase32(inputText);
+                    break;
+                case "base64":
+                    outputText = btoa(inputText);
+                    break;
+            }
+        } else if (baseFrom !== "plaintext" && baseTo === "plaintext") {
+            switch (baseFrom) {
+                case "binary":
+                    outputText = binaryToText(inputText);
+                    break;
+                case "octal":
+                    outputText = octalToText(inputText);
+                    break;
+                case "decimal":
+                    outputText = decimalToText(inputText);
+                    break;
+                case "hexadecimal":
+                    outputText = hexToText(inputText);
+                    break;
+                case "base32":
+                    outputText = base32ToText(inputText);
+                    break;
+                case "base64":
+                    outputText = atob(inputText);
+                    break;
+            }
+        } else {
+            switch (baseFrom) {
+                case "binary":
+                    outputText = parseInt(inputText, 2).toString(getBaseValue(baseTo));
+                    break;
+                case "octal":
+                    outputText = parseInt(inputText, 8).toString(getBaseValue(baseTo));
+                    break;
+                case "decimal":
+                    outputText = parseInt(inputText, 10).toString(getBaseValue(baseTo));
+                    break;
+                case "hexadecimal":
+                    outputText = parseInt(inputText, 16).toString(getBaseValue(baseTo));
+                    break;
+                case "base32":
+                    outputText = base32Decode(inputText).toString(getBaseValue(baseTo));
+                    break;
+                case "base64":
+                    outputText = atob(inputText).toString(getBaseValue(baseTo));
+                    break;
+            }
+        }
+
+        document.getElementById("output").value = outputText;
+    } catch (error) {
+        alert("Error: " + error.message);
+    }
+}
+
+function getBaseValue(base) {
+    switch (base) {
+        case "binary":
+            return 2;
+        case "octal":
+            return 8;
+        case "decimal":
+            return 10;
+        case "hexadecimal":
+            return 16;
+        case "base32":
+            return 32;
+        case "base64":
+            return 64;
+        default:
+            throw new Error("Invalid output base");
+    }
+}
+
+// Base32 decoding function
+function base32Decode(input) {
+    const base32Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567=";
+    let bits = "";
+    let output = "";
+    for (let i = 0; i < input.length; i++) {
+        const char = input[i].toUpperCase();
+        if (base32Chars.indexOf(char) === -1) {
+            throw new Error("Invalid base32 input");
+        }
+        const charIndex = base32Chars.indexOf(char);
+        if (char === "=") {
+            break;
+        }
+        bits += ("00000" + charIndex.toString(2)).slice(-5);
+    }
+    for (let i = 0; i < bits.length; i += 8) {
+        output += String.fromCharCode(parseInt(bits.substr(i, 8), 2));
+    }
+    return output;
+}
+
+// Conversion functions from text to various bases
+function textToBinary(text) {
+    return text.split('').map(function (char) {
+        return char.charCodeAt(0).toString(2).padStart(8, '0');
+    }).join('');
+}
+
+function textToOctal(text) {
+    return text.split('').map(function (char) {
+        return char.charCodeAt(0).toString(8);
+    }).join(' ');
+}
+
+function textToDecimal(text) {
+    return text.split('').map(function (char) {
+        return char.charCodeAt(0).toString(10);
+    }).join(' ');
+}
+
+function textToHex(text) {
+    return text.split('').map(function (char) {
+        return char.charCodeAt(0).toString(16);
+    }).join(' ');
+}
+
+function textToBase32(text) {
+    return base32Encode(text);
+}
+
+function base32Encode(text) {
+    let output = '';
+    for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const binary = char.charCodeAt(0).toString(2).padStart(8, '0');
+        for (let j = 0; j < binary.length; j += 5) {
+            const group = binary.substr(j, 5);
+            const index = parseInt(group, 2);
+            output += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567='[index];
+        }
+    }
+    return output;
+}
+
+// Conversion functions from various bases to text
+function binaryToText(binary) {
+    return binary.match(/.{1,8}/g).map(function (byte) {
+        return String.fromCharCode(parseInt(byte, 2));
+    }).join('');
+}
+
+function octalToText(octal) {
+    return octal.split(' ').map(function (num) {
+        return String.fromCharCode(parseInt(num, 8));
+    }).join('');
+}
+
+function decimalToText(decimal) {
+    return decimal.split(' ').map(function (num) {
+        return String.fromCharCode(parseInt(num, 10));
+    }).join('');
+}
+
+function hexToText(hex) {
+    return hex.split(' ').map(function (num) {
+        return String.fromCharCode(parseInt(num, 16));
+    }).join('');
+}
+
+function base32ToText(input) {
+    return base32Decode(input);
+}
+
+function swap() {
+    const inputText = document.getElementById("input").value;
+    const outputText = document.getElementById("output").value;
+    const baseFrom = document.getElementById("baseFrom").value;
+    const baseTo = document.getElementById("baseTo").value;
+
+    document.getElementById("input").value = outputText;
+    document.getElementById("output").value = inputText;
+
+    document.getElementById("baseFrom").value = baseTo;
+    document.getElementById("baseTo").value = baseFrom;
+}
+</script>
+</body>
+</html>

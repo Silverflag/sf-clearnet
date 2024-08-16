@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Full Page Iframe with CSS Overlay</title>
+  <style>
+    html, body, #root, .App {
+      height: 100%;
+      width: 100%;
+    }
+    * {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
+    html, body {
+      max-width: 100vw;
+      overflow: hidden;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: grey;
+      height: 100vh;
+    }
+    .container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100vw;
+      height: 100vh;
+    }
+    .video-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+        linear-gradient(
+          90deg,
+          rgba(255, 0, 0, 0.06),
+          rgba(0, 255, 0, 0.02),
+          rgba(0, 0, 255, 0.06)
+        );
+      background-size: 100% 4px, 30px 100%;
+      z-index: 1;
+      animation: flicker 100ms infinite;
+      pointer-events: none;
+    }
+    .video-overlay:after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgb(255, 255, 255);
+      background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0) 50%,
+        rgba(0, 0, 0, 1) 100%
+      );
+      z-index: 2;
+      pointer-events: none;
+    }
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      border: none;
+      z-index: 0;
+    }
+    @keyframes flicker {
+      0% {
+        transform: translateY(1px);
+      }
+      100% {
+        transform: translateY(0px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="video-overlay"></div>
+    <iframe src="https://silverflag.net/w95"></iframe>
+  </div>
+</body>
+</html>

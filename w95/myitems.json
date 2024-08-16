@@ -1,0 +1,61 @@
+[
+    {
+        "name": "My Computer",
+        "icon": "https://silverflag.net/w95/mycomputer.png",
+        "x": 20,
+        "y": 20,
+        "type": "folder",
+        "contents": []
+    },
+    {
+        "name": "Tools",
+        "icon": "https://silverflag.net/w95/briefcase.png",
+        "x": 20,
+        "y": 220,
+        "type": "folder",
+        "contents": [
+            {
+                "name": "IP2LOCATION",
+                "url": "https://silverflag.net/tools/iputility.html",
+                "x": 20,
+                "y": 120,
+                "type": "app"
+            },
+            {
+                "name": "DNS Resolver",
+                "url": "https://silverflag.net/tools/dns.html",
+                "x": 120,
+                "y": 120,
+                "type": "app"
+            },
+            {
+                "name": "Base64 Encoder/Decoder",
+                "url": "https://silverflag.net/tools/based.html",
+                "x": 220,
+                "y": 120,
+                "type": "app"
+            },
+            {
+                "name": "Password Strength",
+                "url": "https://silverflag.net/tools/passwordutil.html",
+                "x": 20,
+                "y": 220,
+                "type": "app"
+            },
+            {
+                "name": "Port Scanner",
+                "url": "https://silverflag.net/tools/portscanner.html",
+                "x": 120,
+                "y": 220,
+                "type": "app"
+            }
+        ]
+    },
+    {
+        "name": "Chat",
+        "url": "https://silverflag.net/chat/index.php",
+        "x": 20,
+        "y": 120,
+        "type": "app"
+    }
+]

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Video Downloader</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+    }
+
+    input[type='text'] {
+      width: 100%;
+      max-width: 40rem;
+      padding: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      border-radius: 0.25rem;
+      border: 3px solid #9f9;
+      color: #fff;
+      background-color: #000;
+      margin-bottom: 0.5rem;
+      transition: border-color 0.25s ease-in-out;
+    }
+
+    input[type='text']::placeholder {
+      color: #fff;
+      font-weight: 800;
+      opacity: 0.8;
+    }
+
+    input[type='text']:focus {
+      outline: none;
+      border-color: rgb(255, 255, 255);
+    }
+
+    input[type='button'] {
+      background-color: #9f9;
+      color: #000;
+      padding: 0.5rem 1.5rem;
+      border: none;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      color: rgb(0, 0, 0);
+      font-weight: 800;
+      border-radius: 0.25rem;
+      transition: background-color 250ms ease-in-out, transform 250ms ease-in-out;
+    }
+
+    input[type='button']:hover {
+      background-color: #3f3;
+      transform: scale(1.05);
+    }
+
+    input[type='button']:active {
+      background-color: #2c2;
+      transform: scale(0.95);
+    }
+
+    #container {
+      max-width: 40rem;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 20px;
+      gap: 0.5rem;
+    }
+
+    #info {
+      margin-top: 20px;
+    }
+
+    #map {
+      width: 100%;
+      height: 300px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h1>YouTube Video Downloader</h1>
+    <div class="button-container">
+      <input type="text" id="videoUrl" placeholder="Enter YouTube Video URL">
+      <input type="button" value="Download" onclick="downloadVideo()">
+    </div>
+    <div id="info"></div>
+  </div>
+
+  <script>
+    function downloadVideo() {
+      var videoUrl = document.getElementById("videoUrl").value;
+
+      if (videoUrl) {
+        var apiEndpoint = 'https://youtube-dl.glitch.me/download?videoUrl=' + encodeURIComponent(videoUrl);
+        
+        fetch(apiEndpoint)
+          .then(response => response.blob())
+          .then(blob => {
+            // Create a link element, set its download attribute and href
+            var a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = 'Silverflag - video.mp4';
+            // Append the link to the body
+            document.body.appendChild(a);
+            // Trigger the click event on the link
+            a.click();
+            // Remove the link from the body
+            document.body.removeChild(a);
+            document.getElementById("info").innerText = "Download completed.";
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            document.getElementById("info").innerText = "An error occurred. Please try again.";
+          });
+      } else {
+        alert("Please enter a YouTube video URL.");
+      }
+    }
+  </script>
+</body>
+</html>

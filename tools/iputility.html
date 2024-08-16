@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IP Information Utility | Silver Flag</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet" />
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+<style>
+  body {
+    background-color: #000;
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 800;
+  }
+
+  #container {
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .button-container {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+    gap: 0.5rem;
+  }
+
+  input[type='text'] {
+    width: 100%;
+    max-width: 40rem;
+    padding: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 800;
+    border-radius: 0.25rem;
+    border: 3px solid #9f9;
+    color: #fff;
+    background-color: #000;
+    margin-bottom: 0.5rem;
+    transition: border-color 0.25s ease-in-out;
+  }
+
+  input[type='text']::placeholder {
+    color: #fff;
+    font-weight: 800;
+    opacity: 0.8;
+  }
+
+  input[type='text']:focus {
+    outline: none;
+    border-color: rgb(255, 255, 255);
+  }
+
+  input[type='button'] {
+    background-color: #9f9;
+    color: #000;
+    padding: 0.5rem 1.5rem;
+    border: none;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    color: rgb(0, 0, 0);
+    font-weight: 800;
+    border-radius: 0.25rem;
+    transition: background-color 250ms ease-in-out, transform 250ms ease-in-out;
+  }
+
+  input[type='button']:hover {
+    background-color: #3f3;
+    transform: scale(1.05);
+  }
+  input[type='button']:active {
+    background-color: #2c2;
+    transform: scale(0.95);
+  }
+
+  #info {
+    margin-top: 20px;
+  }
+
+  #map {
+    width: 100%;
+    height: 300px;
+    margin-bottom: 20px;
+  }
+</style>
+</head>
+<body>
+<div id="container">
+  <h1>>> IP Information Utility <<</h1>
+  <input type="text" id="ipInput" placeholder="Enter an IP address" />
+  <div class="button-container">
+    <input type="button" value="Get Info" onclick="getIPInfo()" />
+    <input type="button" value="Use your IP" onclick="useYourIP()" />
+  </div>
+  <div id="info"></div>
+  <div id="map"></div>
+</div>
+
+<!-- Leaflet JavaScript -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+<script>
+  var map = L.map('map').setView([0, 0], 2); // Set the initial position and zoom level
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+    maxZoom: 19,
+  }).addTo(map);
+
+  function getIPInfo() {
+    var ip = document.getElementById('ipInput').value.trim();
+    if (!ip) {
+      alert('Please enter an IP address');
+      return;
+    }
+
+    fetch(`https://ipapi.co/${ip}/json/`)
+      .then((response) => response.json())
+      .then((data) => {
+        var info = document.getElementById('info');
+        info.innerHTML = '<h2>IP Information:</h2>';
+        var ul = document.createElement('ul');
+        for (var key in data) {
+          var li = document.createElement('li');
+          li.textContent = key + ': ' + data[key];
+          ul.appendChild(li);
+        }
+        info.appendChild(ul);
+
+        // Add marker to the map
+        var lat = parseFloat(data.latitude);
+        var lon = parseFloat(data.longitude);
+        L.marker([lat, lon]).addTo(map)
+          .bindPopup('Location based on IP address')
+          .openPopup();
+
+        // Update map view
+        map.setView([lat, lon], 13);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        alert('Error occurred. Please try again.');
+      });
+  }
+
+  function useYourIP() {
+    fetch('https://api.ipify.org?format=json')
+      .then((response) => response.json())
+      .then((data) => {
+        var ipInput = document.getElementById('ipInput');
+        ipInput.value = data.ip;
+        getIPInfo(); // Automatically fetch IP info when using your own IP
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        alert('Error occurred. Please try again.');
+      });
+  }
+</script>
+</body>
+</html>
