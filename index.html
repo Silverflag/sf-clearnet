@@ -96,32 +96,3 @@
     });
   </script>
 </html>
-
-
-
-<div id="custom-cursor"></div>
-
-<style>
-  /* Custom Cursor Styles */
-  body {
-    cursor: none;
-  }
-  
-  #custom-cursor {
-    position: fixed;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
-    mix-blend-mode: difference;
-    transition: transform 0.1s ease;
-  }
-  
-  @keyframes wobble {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.2) rotate(5deg); }
-  }
-</style>
-
-<script>
