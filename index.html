@@ -125,29 +125,3 @@
 </style>
 
 <script>
-// Custom Cursor JavaScript
-function updateCursor(e) {
-    const cursor = document.getElementById('custom-cursor');
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
-    
-    // Get the color of the element under the cursor
-    const element = document.elementFromPoint(e.clientX, e.clientY);
-    const color = window.getComputedStyle(element).getPropertyValue('background-color');
-    
-    // Invert the color
-    const rgb = color.match(/\d+/g);
-    const invertedColor = rgb ? `rgb(${255-rgb[0]}, ${255-rgb[1]}, ${255-rgb[2]})` : '#ff00ff';
-    
-    cursor.style.background = invertedColor;
-    cursor.style.boxShadow = `0 0 10px ${invertedColor}`;
-    
-    // Add wobble effect
-    cursor.style.animation = 'wobble 0.5s infinite';
-}
-
-document.addEventListener('mousemove', updateCursor);
-
-// Set a high z-index for the custom cursor
-const cursor = document.getElementById('custom-cursor');
-cursor.style.zIndex = '99999999999999999999';
