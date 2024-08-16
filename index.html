@@ -125,8 +125,8 @@
 </style>
 
 <script>
-  // Custom Cursor JavaScript
-  function updateCursor(e) {
+// Custom Cursor JavaScript
+function updateCursor(e) {
     const cursor = document.getElementById('custom-cursor');
     cursor.style.left = e.clientX + 'px';
     cursor.style.top = e.clientY + 'px';
@@ -144,8 +144,11 @@
     
     // Add wobble effect
     cursor.style.animation = 'wobble 0.5s infinite';
-  }
+}
 
-  document.addEventListener('mousemove', updateCursor);
+document.addEventListener('mousemove', updateCursor);
+
+// Set a high z-index for the custom cursor
+const cursor = document.getElementById('custom-cursor');
+cursor.style.zIndex = '9999';
 </script>
-
