@@ -6,14 +6,16 @@ require_once('db.php');
 
 session_start();
 
-// Validate if necessary tables are created
 validateTables();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   if (isset($_POST['message'])) {
     $message = $_POST['message'];
 
-    // Check if the message contains any image links
+    if (strlen($message) > 512) {
+      $message = "Message exceeds the length limit, which is set to 512 characters. It has been edited.";
+    }
+
     preg_match_all('/<img src="(.*?)"/', $message, $matches);
     foreach ($matches[1] as $image) {
       $message = str_replace('<img src="' . $image . '" alt="Uploaded Image">', $image, $message);
@@ -21,8 +23,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $db = getDB();
     $username = $_SESSION['username'];
+    if (strlen($username) > 14) {
+      $username = "toolong";
+    }
+    $usernameWithTime = $username . ' <small style="font-size: smaller;">(' . date('M j') . ' <small style="font-size: x-small;">' . date('H:i:s') . '</small>)</small>';
+
     $stmt = $db->prepare("INSERT INTO messages (username, message) VALUES (?, ?)");
-    $stmt->bind_param("ss", $username, $message);
+    $stmt->bind_param("ss", $usernameWithTime, $message);
     $stmt->execute();
     $stmt->close();
 
