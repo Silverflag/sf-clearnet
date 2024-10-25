@@ -26,14 +26,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (strlen($username) > 14) {
       $username = "toolong";
     }
+
     $usernameWithTime = $username . ' <small style="font-size: smaller;">(' . date('M j') . ' <small style="font-size: x-small;">' . date('H:i:s') . '</small>)</small>';
+    
+    $message = '<span style="color: #777;">' . $message . '</span>'; // Add gray color to the message for DB
 
     $stmt = $db->prepare("INSERT INTO messages (username, message) VALUES (?, ?)");
     $stmt->bind_param("ss", $usernameWithTime, $message);
     $stmt->execute();
     $stmt->close();
 
-    echo "Message sent successfully!";
+    echo '<span style="color: #333;">Message sent successfully!</span>';
   } else {
     echo "Error: Message not received.";
   }
