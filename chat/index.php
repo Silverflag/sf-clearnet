@@ -25,13 +25,13 @@
             color: #00ff00;
         }
         .dot {
-            animation: blink 1s step-start infinite;
+            animation: blink 0.5s step-start infinite;
         }
         .dot:nth-child(2) {
-            animation-delay: 0.2s;
+            animation-delay: 0.1s;
         }
         .dot:nth-child(3) {
-            animation-delay: 0.4s;
+            animation-delay: 0.2s;
         }
         @keyframes blink {
             50% {
