@@ -1,2 +1,0 @@
-note for anyone trying this on the GitHub. This is an old project, it is really just a scrape of google.com and is outputting it on a crappy menu. Probably will not use
-it but the php file for searching with a flag might be useful for something else later, but it might get the IP of where the server is running from to be throttled!!!
